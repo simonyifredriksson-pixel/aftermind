@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AFTERMIND</title>
+<meta name="description" content="A first-person sci-fi survival horror game. The machines took the city. One of them is still on your side. 1-4 players.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Caveat:wght@500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- stamp:start (written by tools/stamp.mjs - do not edit by hand) -->
+<script type="importmap">{
+ "imports": {
+  "./lib/three.module.js": "./lib/three.module.js?v=a762b858",
+  "./src/art/Art.js": "./src/art/Art.js?v=b9a100d7",
+  "./src/art/CityProps.js": "./src/art/CityProps.js?v=2c20a17a",
+  "./src/art/EnemyArt.js": "./src/art/EnemyArt.js?v=89ace980",
+  "./src/art/GuideArt.js": "./src/art/GuideArt.js?v=3a366138",
+  "./src/art/InteriorProps.js": "./src/art/InteriorProps.js?v=054d4b0c",
+  "./src/art/PlayerArt.js": "./src/art/PlayerArt.js?v=79ad068e",
+  "./src/core/Audio.js": "./src/core/Audio.js?v=b8657e0a",
+  "./src/core/Input.js": "./src/core/Input.js?v=b529a928",
+  "./src/core/PostFX.js": "./src/core/PostFX.js?v=9a8525d1",
+  "./src/core/Textures.js": "./src/core/Textures.js?v=e88e2f6e",
+  "./src/core/Util.js": "./src/core/Util.js?v=8eeb46fc",
+  "./src/data/Items.js": "./src/data/Items.js?v=fdb8d14a",
+  "./src/data/Machines.js": "./src/data/Machines.js?v=9a71d95a",
+  "./src/debug/Tests.js": "./src/debug/Tests.js?v=11779119",
+  "./src/game/Director.js": "./src/game/Director.js?v=0fe201fe",
+  "./src/game/Enemies.js": "./src/game/Enemies.js?v=529957f9",
+  "./src/game/FX.js": "./src/game/FX.js?v=6180b852",
+  "./src/game/Game.js": "./src/game/Game.js?v=59f85eea",
+  "./src/game/Guide.js": "./src/game/Guide.js?v=b2ac2ec3",
+  "./src/game/Interact.js": "./src/game/Interact.js?v=4f7628a4",
+  "./src/game/Photo.js": "./src/game/Photo.js?v=37da7f35",
+  "./src/game/Player.js": "./src/game/Player.js?v=e9d16bfb",
+  "./src/game/Remote.js": "./src/game/Remote.js?v=9d1a30a0",
+  "./src/game/State.js": "./src/game/State.js?v=ee636e92",
+  "./src/game/Story.js": "./src/game/Story.js?v=23c8cb79",
+  "./src/game/Viewmodel.js": "./src/game/Viewmodel.js?v=2b4f671a",
+  "./src/main.js": "./src/main.js?v=10e5511c",
+  "./src/net/Net.js": "./src/net/Net.js?v=4e168a8b",
+  "./src/ui/HUD.js": "./src/ui/HUD.js?v=0161ad77",
+  "./src/ui/UI.js": "./src/ui/UI.js?v=af27e09c",
+  "./src/world/Atmos.js": "./src/world/Atmos.js?v=9feb244d",
+  "./src/world/Builder.js": "./src/world/Builder.js?v=4c4f31b5",
+  "./src/world/Lights.js": "./src/world/Lights.js?v=78dc5bf9",
+  "./src/world/Nav.js": "./src/world/Nav.js?v=30ad98af",
+  "./src/world/Physics.js": "./src/world/Physics.js?v=86962cb1",
+  "./src/world/levels/Apartment.js": "./src/world/levels/Apartment.js?v=9af4f84e",
+  "./src/world/levels/Archive.js": "./src/world/levels/Archive.js?v=5268598d",
+  "./src/world/levels/Factory.js": "./src/world/levels/Factory.js?v=dd32d007",
+  "./src/world/levels/Helix.js": "./src/world/levels/Helix.js?v=da6cb7de",
+  "./src/world/levels/Metro.js": "./src/world/levels/Metro.js?v=c548badd",
+  "./src/world/levels/Street.js": "./src/world/levels/Street.js?v=bf76742f",
+  "./src/world/levels/Tunnels.js": "./src/world/levels/Tunnels.js?v=6ac1b796",
+  "./src/world/levels/common.js": "./src/world/levels/common.js?v=cc6625ca",
+  "./src/world/levels/index.js": "./src/world/levels/index.js?v=33173daa"
+ }
+}</script>
+<!-- stamp:end -->
+<link rel="stylesheet" href="styles/main.css?v=0e84c177">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='18' fill='none' stroke='%23ff3424' stroke-width='4'/%3E%3Cpath d='M24 6v8M8.4 33l7-4M39.6 33l-7-4' stroke='%23ff3424' stroke-width='4'/%3E%3C/svg%3E">
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud" class="hidden"></div>
+<div id="cards"></div>
+<div id="panel"></div>
+<input id="chatbox" maxlength="120" placeholder="Say something... (Enter)" style="display:none" autocomplete="off">
+<div id="fade"><div class="ft"></div><div class="fs"></div></div>
+
+<div id="title">
+  <div class="tbg"></div>
+  <div class="tbox">
+    <div class="logo">AFTERMIND</div>
+    <div class="tag">The machines took the city. One of them is still on your side.</div>
+    <label class="tn">Your name <input id="tname" maxlength="16" autocomplete="off"></label>
+    <div class="tbtns">
+      <button id="bcont" class="big">CONTINUE</button>
+      <button id="bnew" class="big">NEW GAME</button>
+      <button id="bhost">HOST CO-OP</button>
+      <div class="join"><input id="tcode" maxlength="5" placeholder="CODE" autocomplete="off"><button id="bjoin">JOIN</button></div>
+    </div>
+    <div id="tmsg"></div>
+    <div class="tfoot">1-4 players &middot; headphones recommended &middot; WASD + mouse</div>
+  </div>
+</div>
+<div id="loading"><div class="lt">AFTERMIND</div><div id="loadtxt">Loading...</div></div>
+<pre id="errlog"></pre>
+<noscript><p style="color:#fff;padding:20px">AFTERMIND needs JavaScript and WebGL.</p></noscript>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js" async></script>
+<script type="module" src="src/main.js?v=10e5511c"></script>
+</body>
+</html>
