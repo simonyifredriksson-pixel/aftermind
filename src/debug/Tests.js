@@ -13,7 +13,7 @@ function out(lines) {
   d.style.cssText = 'position:fixed;left:0;top:0;z-index:100;background:rgba(0,0,0,.8);color:#9f9;font:13px monospace;padding:8px;max-width:60vw;max-height:95vh;overflow:auto;margin:0;white-space:pre-wrap';
   d.textContent = lines.join('\n'); document.body.appendChild(d);
 }
-function sim(g, secs, dt = 0.05) { for (let t = 0; t < secs; t += dt) g.update(dt); }
+function sim(g, secs, dt = 0.05) { for (let t = 0; t < secs; t += dt) { g.update(dt); g.input.endFrame(); } }
 
 export async function shot(g, name, P) {
   g.noRender = false;
@@ -41,7 +41,7 @@ export async function shot(g, name, P) {
 }
 
 const use = (g, id) => { const o = g.interact.byId.get(id); if (!o) throw new Error('no interactable ' + id); o.use(g.me); };
-const waitFor = async (g, f, secs, dt = 0.05) => { for (let t = 0; t < secs; t += dt) { g.update(dt); await null; if (f()) return true; } return f(); };
+const waitFor = async (g, f, secs, dt = 0.05) => { for (let t = 0; t < secs; t += dt) { g.update(dt); g.input.endFrame(); await null; if (f()) return true; } return f(); };
 async function play(g, ok) {
   // -1. jumping into furniture never drops you through the floor
   { let lowest = 99, n = 0;
@@ -141,6 +141,33 @@ export async function run(g, name) {
       }
       ok(g.nav.nodes.length > 200, 'nav nodes ' + g.nav.nodes.length);
       if (name === 'story') throw { done: true };
+    }
+    if (name === 'camera') {
+      // the real path: walk up to the pile, press E on the camera, press 1, hold right mouse
+      g.story.devSkip('camera'); sim(g, 1);
+      const ia = g.interact.byId.get('pk:camera');
+      ok(!!ia, 'camera pickup exists at ' + (ia && ia.pos.toArray().map(v => v.toFixed(1)).join(',')));
+      g.player.place(-37.0, 0, 8.4, 2.6); sim(g, 0.2);
+      const c = ia.pos; const dx = c.x - g.player.pos.x, dz = c.z - g.player.pos.z;
+      g.player.yaw = Math.atan2(-dx, -dz); g.player.pitch = Math.atan2(c.y - 1.62, Math.hypot(dx, dz)); sim(g, 0.1);
+      g.player.yaw = Math.atan2(-dx, -dz); g.player.pitch = Math.atan2(c.y - 1.62, Math.hypot(dx, dz));
+      sim(g, 0.05);
+      ok(g.interact.focus === ia, 'looking at the camera focuses it: ' + (g.interact.focus?.id || 'nothing') + ' prompt "' + document.getElementById('ptext').textContent + '"');
+      g.input.fake('KeyE', true); sim(g, 0.05); g.input.fake('KeyE', false); sim(g, 0.3);
+      ok(g.inv.tools.camera, 'E picks up the camera; tools=' + JSON.stringify(g.inv.tools) + ' items=' + JSON.stringify(g.inv.items));
+      g.input.fake('Digit1', true); sim(g, 0.05); g.input.fake('Digit1', false); sim(g, 0.3);
+      ok(g.player.tool === 'camera', 'pressing 1 equips it: tool=' + g.player.tool + ' HUD "' + document.getElementById('tool').textContent + '"');
+      g.input.fakeBtn(2, true); sim(g, 0.5);
+      ok(g.photo.raised, 'right mouse raises it');
+      g.input.fakeBtn(2, false); sim(g, 0.2);
+      g.view.select('none'); sim(g, 0.1);
+      g.input.fake('Numpad1', true); sim(g, 0.05); g.input.fake('Numpad1', false); sim(g, 0.2);
+      ok(g.player.tool === 'camera', 'numpad 1 also equips it');
+      g.view.select('none'); sim(g, 0.1);
+      g.input.fakeBtn(2, true); sim(g, 0.6);
+      ok(g.player.tool === 'camera' && g.photo.raised, 'right mouse with empty hands takes out and raises the camera');
+      g.input.fakeBtn(2, false); sim(g, 0.2);
+      throw { done: true };
     }
     if (name === 'play' || name === 'all') await play(g, ok);
     if (name === 'play') throw { done: true };

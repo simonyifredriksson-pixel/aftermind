@@ -25,6 +25,8 @@ export class Photo {
   get unseen() { return this.g.photos.filter(p => !p.shown && p.subjects.length).length; }
   update(dt) {
     const g = this.g, I = g.input, p = g.player;
+    // right mouse with empty hands takes the camera out
+    if (g.inv.tools.camera && p.tool === 'none' && I.click(2) && g.phase === 'play' && !g.ui.modal && !p.down) g.view.select('camera');
     const has = g.inv.tools.camera && p.tool === 'camera';
     const can = has && g.phase === 'play' && !g.ui.modal && !p.down;
     const want = can && I.btn(2);

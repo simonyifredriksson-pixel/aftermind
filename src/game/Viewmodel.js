@@ -85,7 +85,10 @@ export class Viewmodel {
     const g = this.g, p = g.player, I = g.input;
     const can = g.phase === 'play' && !g.ui.modal && !p.down && !p.frozen;
     if (can) {
-      ORDER.forEach((t, i) => { if (I.pressed('Digit' + (i + 1))) this.select(p.tool === t ? 'none' : t); });
+      ORDER.forEach((t, i) => { if (I.pressed('Digit' + (i + 1)) || I.pressed('Numpad' + (i + 1))) { if (!this.owned(t)) { if (t === 'camera') g.hud.toast('You don\'t have a camera yet.'); return; } this.select(p.tool === t ? 'none' : t); } });
+      // a gentle reminder if you have the camera but never take it out
+      if (g.inv.tools.camera && p.tool === 'none' && !this._camHint) { this._camHintT = (this._camHintT || 0) + dt; if (this._camHintT > 20) { this._camHint = true; g.hud.toast('Press 1 (or hold right mouse) to take out the camera.', 6); } }
+      if (p.tool === 'camera') this._camHint = true;
       if (I.pressed('KeyQ')) this.select('none');
       if (!g.photo.raised) { const w = I.wheel(); if (w) { const own = ['none', ...ORDER.filter(t => this.owned(t))]; let i = own.indexOf(p.tool); i = (i + (w > 0 ? 1 : -1) + own.length) % own.length; this.select(own[i]); } }
     }
