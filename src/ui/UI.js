@@ -48,6 +48,7 @@ export class UI {
     if (e.target && e.target.tagName === 'INPUT') return;
     if (e.code === 'KeyI') { this.panel === 'pack' ? this.close() : this.open('pack'); }
     else if (e.code === 'KeyJ') { this.panel === 'log' ? this.close() : this.open('log'); }
+    else if (e.code === 'F9' || e.code === 'Backquote') { e.preventDefault(); this.panel === 'admin' ? this.close() : this.open('admin'); }
     else if (e.code === 'Escape' && this.panel && this.panel !== 'death') { this.close(); }
     else if (this.panel === 'guide' && /^Digit[1-5]$/.test(e.code)) { const b = $('panel').querySelectorAll('[data-gm]')[+e.code.slice(5) - 1]; if (b) b.click(); }
     else if (this.panel === 'note' && (e.code === 'KeyE' || e.code === 'Space')) this.close();
@@ -157,6 +158,7 @@ export class UI {
     const o = this.arg;
     return `<div class="box note ${o.kind || 'paper'}">${o.kind === 'terminal' ? '<div class="scan"></div>' : ''}<div class="nt">${esc(o.title)}</div><div class="nb">${esc(o.text).replace(/\n/g, '<br>')}</div><div class="foot">E or Esc to close</div></div>`;
   }
+  _admin() { return this.g.admin.html(); }
   _death() { return `<div class="box death"><div class="dt">SIGNAL LOST</div><p>${esc(this.deathLine || 'The machines do not stop. Neither can you.')}</p><button data-a="retry" class="big">TRY AGAIN</button><button data-a="quit">QUIT TO TITLE</button></div>`; }
   credits() { this.open('credits'); this.g.audio.setMusic?.('safe'); }
   _credits() {
@@ -184,6 +186,7 @@ export class UI {
   _click(e) {
     const g = this.g, t = e.target.closest('button'); if (!t) return;
     g.audio.uiClick?.();
+    if (t.dataset.adm) { this.g.admin.act(t.dataset.adm, t.dataset.arg); this.render(); return; }
     if (t.dataset.tab) { this.tab = t.dataset.tab; this.render(); return; }
     if (t.dataset.m) { this.arg = t.dataset.m; this.render(); return; }
     if (t.dataset.craft) { const r = RECIPES.find(x => x.id === t.dataset.craft); if (r && g.craft(r)) { g.hud.toast('Built: ' + (t.closest('.rec').querySelector('b').textContent)); g.guide.bark('built', true); } this.render(); return; }
@@ -205,6 +208,7 @@ export class UI {
     else if (a === 'host') { const m = $('hostmsg'); m.textContent = 'Opening a room...'; g.net.host({ name: g.profile.name, look: g.profile.look, key: g.profile.key }).then(code => { this.render(); g.hud.toast('Room code: ' + code); }).catch(err => { m.textContent = err.message; }); }
   }
   _input(e) {
+    if (e.target.dataset.admspeed !== undefined) { this.g.timeScale = +e.target.value; const l = document.getElementById('admspd'); if (l) l.textContent = this.g.timeScale.toFixed(2) + 'x'; return; }
     const g = this.g, s = e.target.dataset.s; if (!s) return;
     const p = g.profile; const v = e.target.type === 'checkbox' ? e.target.checked : e.target.tagName === 'SELECT' ? e.target.value : +e.target.value;
     p[s] = v; saveProfile(p);

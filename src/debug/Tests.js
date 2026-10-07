@@ -142,6 +142,26 @@ export async function run(g, name) {
       ok(g.nav.nodes.length > 200, 'nav nodes ' + g.nav.nodes.length);
       if (name === 'story') throw { done: true };
     }
+    if (name === 'admin') {
+      const A = g.admin, click = (k, a) => { A.act(k, a); g.ui.render(); };
+      g.ui.open('admin');
+      ok(!!document.querySelector('.admin [data-adm="god"]'), 'F9 panel opens with buttons');
+      click('god'); g.player.damage(500); ok(g.player.hp === 100, 'god mode: no damage');
+      click('tp', 7); sim(g, 0.3); ok(g.zone?.id === 'plaza', 'teleport to the plaza -> zone ' + g.zone?.id);
+      const y0 = g.player.pos.y; click('noclip'); g.ui.close(); g.input.fake('Space', true); sim(g, 1); g.input.fake('Space', false);
+      ok(g.player.pos.y > y0 + 5, 'noclip flies up: ' + y0.toFixed(1) + ' -> ' + g.player.pos.y.toFixed(1));
+      click('noclip'); click('tp', 7); sim(g, 0.5);
+      const n0 = g.enemies.list.length; click('spawn', 'hunter'); const h = g.enemies.list[g.enemies.list.length - 1];
+      ok(g.enemies.list.length === n0 + 1 && h.type === 'hunter', 'spawn a hunter in front of you');
+      click('invisible'); sim(g, 2); ok(h.state !== 'hunt', 'invisible: the hunter does not hunt you (' + h.state + ')');
+      click('kill'); ok(h.dead, 'kill nearby');
+      click('give'); ok(g.inv.tools.camera && g.inv.tools.prod && g.inv.items.emp >= 5 && g.inv.keys.keycard, 'give everything');
+      click('knowall'); ok(g.knows('foreman') && g.flags['mem:kernel'], 'unlock whole Field Log + memories');
+      click('step', 'shelter'); sim(g, 0.5); ok(g.story.step.id === 'shelter' && g.zone?.id === 'helix', 'jump to a chapter step -> ' + g.story.step.id + ' in ' + g.zone?.id);
+      click('readout'); sim(g, 0.5); ok(/FPS/.test(A.el.textContent), 'position / FPS readout');
+      g.ui.open('admin'); window.__render?.();
+      throw { done: true };
+    }
     if (name === 'camera') {
       // the real path: walk up to the pile, press E on the camera, press 1, hold right mouse
       g.story.devSkip('camera'); sim(g, 1);

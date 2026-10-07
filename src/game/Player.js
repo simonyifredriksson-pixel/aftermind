@@ -87,7 +87,13 @@ export class Player {
     if (!crouch && this.eye < EYE - 0.05) { // standing up under something?
       const ceil = g.phys.ceiling(B.pos.x, B.pos.z, B.pos.y, 1.15); if (ceil < B.pos.y + 1.8) B.h = 1.15;
     }
-    g.phys.stepBody(B, dt);
+    if (g.noclip) {
+      const fl = (I.held('ShiftLeft') ? 22 : 8) * (can ? 1 : 0), up = (I.held('Space') ? 1 : 0) - (I.held('KeyC') ? 1 : 0);
+      const cp = Math.cos(this.pitch), dirx = -Math.sin(this.yaw) * cp, diry = Math.sin(this.pitch), dirz = -Math.cos(this.yaw) * cp;
+      const f = can ? I.axis('KeyS', 'KeyW') : 0, sx = can ? I.axis('KeyA', 'KeyD') : 0;
+      B.pos.x += (dirx * f + Math.cos(this.yaw) * sx) * fl * dt; B.pos.z += (dirz * f - Math.sin(this.yaw) * sx) * fl * dt; B.pos.y += (diry * f + up) * fl * dt;
+      B.vel.set(0, 0, 0); B.grounded = false; B.landV = 0;
+    } else g.phys.stepBody(B, dt);
     if (!wasGround && B.grounded && B.landV > 4) { g.audio.land?.(Math.min(1, B.landV / 12)); this.makeNoise(B.landV); if (B.landV > 11) this.damage((B.landV - 11) * 8); this.camShake = Math.min(1, this.camShake + B.landV / 30); }
     if (B.fell) { B.fell = false; g.respawnLocal(); }
     this.eye = damp(this.eye, B.h < 1.5 ? CROUCH_EYE : EYE, 12, dt);

@@ -75,6 +75,7 @@ class Enemy {
 
   /* ---------------- perception ---------------- */
   canSee(pl) {
+    if (pl.local && this.g.invisible) return false;
     if (pl.down) return false;
     const p = this.p, e = this.center(), dx = pl.pos.x - e.x, dz = pl.pos.z - e.z, dy = pl.pos.y + (pl.eye || 1.6) * 0.8 - e.y, d = Math.hypot(dx, dy, dz);
     let range = p.sight * (pl.light ? 1.35 : 1) * (pl.crouch ? 0.6 : 1);
@@ -87,6 +88,7 @@ class Enemy {
     return this.g.phys.clear(e.x, e.y, e.z, pl.pos.x, pl.pos.y + 1.4, pl.pos.z, b => b.tag !== 'enemy' && !b.glass);
   }
   heard(pos, r, who) {
+    if (this.g.invisible && who === this.g.player) return;
     if (this.dead || this.state === 'dormant' || !this.p.hear || this.hidden) return;
     const d = this.pos.distanceTo(pos);
     if (d > r * this.p.hear) return;

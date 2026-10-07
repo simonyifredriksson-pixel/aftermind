@@ -184,3 +184,10 @@ input, select { font-family: 'Rajdhani', sans-serif; font-size: 16px; color: var
 .death p { font-family: 'Inter', sans-serif; color: #c2ccd0; }
 #panel.p-death { background: radial-gradient(ellipse, rgba(40, 0, 0, 0.6), rgba(0, 0, 0, 0.92)); }
 .credits { width: min(640px, 90vw); text-align: center; }
+.admin { width: min(1240px, 96vw); }
+.admin .acols { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 22px; }
+.admin .abtns { display: flex; flex-wrap: wrap; gap: 5px; }
+.admin .abtns.steps { max-height: 62vh; overflow: auto; flex-direction: column; flex-wrap: nowrap; }
+.admin button { font-size: 13px; padding: 6px 10px; letter-spacing: 0.04em; text-align: left; }
+.admin button.on { border-color: #6dffb0; color: #b8ffd8; background: rgba(80, 255, 160, 0.12); }
+.admin label { display: flex; align-items: center; gap: 8px; font-size: 14px; width: 100%; }

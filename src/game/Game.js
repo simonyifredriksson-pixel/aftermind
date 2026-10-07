@@ -26,6 +26,7 @@ import { Viewmodel } from './Viewmodel.js';
 import { Remote, makeRemoteSpots } from './Remote.js';
 import { item } from '../art/Art.js';
 import { HUD } from '../ui/HUD.js';
+import { Admin } from '../ui/Admin.js';
 import { UI } from '../ui/UI.js';
 import { COMPONENTS, TOOLS, KEYS, START_INV, RECIPES } from '../data/Items.js';
 import { MACHINES } from '../data/Machines.js';
@@ -46,7 +47,7 @@ export class Game {
     this.player = new Player(this);
     this.inv = START_INV();
     this.photos = [];
-    this.hud = new HUD(this); this.ui = new UI(this);
+    this.hud = new HUD(this); this.ui = new UI(this); this.admin = new Admin(this);
     this.triggers = [];
     this.updaters = [];
     this.remotes = new Map();
@@ -292,6 +293,7 @@ export class Game {
     this.atmos.update(dt, this.camera, this.zone);
     this._audio(dt);
     this.hud.update(dt);
+    this.admin.update(dt);
     this.ui.update(dt);
     // post fx
     this.fxHurt = Math.max(0, this.fxHurt - dt * 0.8);
