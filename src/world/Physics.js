@@ -59,7 +59,7 @@ export class Physics {
   /** lowest box bottom above head height (ceiling) */
   ceiling(x, z, y, h) {
     let best = 1e9;
-    this.near(x, z, b => { if (b.y0 >= y + 0.1 && b.y0 < best && this.inside(b, x, z)) best = b.y0; });
+    this.near(x, z, b => { if (b.y0 >= y + h - 0.1 && b.y0 < best && this.inside(b, x, z)) best = b.y0; });
     return best;
   }
   /** push a vertical cylinder (feet at pos.y, height h, radius r) out of every box it overlaps. */
@@ -99,7 +99,7 @@ export class Physics {
     v.y -= gravity * dt;
     let ny = p.y + v.y * dt;
     const g = this.ground(p.x, p.z, p.y, body.grounded ? STEP : 0.05, body.r * 0.6);
-    if (v.y > 0) { const c = this.ceiling(p.x, p.z, p.y, body.h); if (ny + body.h > c) { ny = c - body.h; v.y = 0; } }
+    if (v.y > 0) { const c = this.ceiling(p.x, p.z, p.y, body.h); if (ny + body.h > c) { ny = Math.max(p.y, c - body.h); v.y = 0; } }
     if (ny <= g + 1e-4) {
       body.landV = body.grounded ? 0 : -v.y;
       ny = body.grounded || v.y <= 0 ? g : ny; if (ny <= g) { v.y = 0; body.grounded = true; }

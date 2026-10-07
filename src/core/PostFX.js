@@ -73,7 +73,7 @@ export class PostFX {
       vertexShader: VERT, fragmentShader: COMPOSITE, depthTest: false, depthWrite: false,
       uniforms: {
         tDiffuse: { value: null }, b0: { value: null }, b1: { value: null }, b2: { value: null }, b3: { value: null }, b4: { value: null },
-        bloom: { value: 0.9 }, exposure: { value: 1.0 }, time: { value: 0 }, grain: { value: 0.022 }, vignette: { value: 1 }, aberr: { value: 0.0025 },
+        bloom: { value: 0.9 }, exposure: { value: 1.0 }, time: { value: 0 }, grain: { value: 0 }, vignette: { value: 1 }, aberr: { value: 0.0025 },
         hurt: { value: 0 }, staticAmt: { value: 0 }, sat: { value: 0.92 }, tint: { value: new THREE.Vector3(1, 1, 1) }, photo: { value: 0 }, blackout: { value: 0 },
       },
     });

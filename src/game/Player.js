@@ -85,7 +85,7 @@ export class Player {
     const wasGround = B.grounded;
     B.h = crouch ? 1.15 : 1.75;
     if (!crouch && this.eye < EYE - 0.05) { // standing up under something?
-      const ceil = g.phys.ceiling(B.pos.x, B.pos.z, B.pos.y, 1.75); if (ceil < B.pos.y + 1.8) B.h = 1.15;
+      const ceil = g.phys.ceiling(B.pos.x, B.pos.z, B.pos.y, 1.15); if (ceil < B.pos.y + 1.8) B.h = 1.15;
     }
     g.phys.stepBody(B, dt);
     if (!wasGround && B.grounded && B.landV > 4) { g.audio.land?.(Math.min(1, B.landV / 12)); this.makeNoise(B.landV); if (B.landV > 11) this.damage((B.landV - 11) * 8); this.camShake = Math.min(1, this.camShake + B.landV / 30); }

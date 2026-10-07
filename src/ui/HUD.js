@@ -40,9 +40,9 @@ export class HUD {
     p.classList.add('on'); p.classList.toggle('hold', !!hold);
     $('ringfill').style.strokeDashoffset = String(100.5 * (1 - (frac || 0)));
   }
-  toast(t) {
+  toast(t, secs = 3.2) {
     const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; $('toasts').appendChild(d);
-    setTimeout(() => d.classList.add('out'), 3200); setTimeout(() => d.remove(), 4000);
+    setTimeout(() => d.classList.add('out'), secs * 1000); setTimeout(() => d.remove(), secs * 1000 + 800);
     while ($('toasts').children.length > 4) $('toasts').firstChild.remove();
   }
   pickup(name, icon) { this.toast('+ ' + name); }

@@ -43,6 +43,25 @@ export async function shot(g, name, P) {
 const use = (g, id) => { const o = g.interact.byId.get(id); if (!o) throw new Error('no interactable ' + id); o.use(g.me); };
 const waitFor = async (g, f, secs, dt = 0.05) => { for (let t = 0; t < secs; t += dt) { g.update(dt); await null; if (f()) return true; } return f(); };
 async function play(g, ok) {
+  // -1. jumping into furniture never drops you through the floor
+  { let lowest = 99, n = 0;
+    for (const [x, z] of [[-28.5, 3.3], [-28.2, 3.6], [-28.8, 3.0], [-27.6, 4.2], [-30.5, 2.4], [-30.5, 3.8], [-26.9, 4.9], [-25.6, 3.6], [-31.4, 10.6], [-29.2, 7.6]]) {
+      for (const a of [0, 1.6, 3.2, 4.7]) {
+        g.player.place(x + Math.sin(a) * 1.3, 7.2, z + Math.cos(a) * 1.3, a); sim(g, 0.1);
+        g.input.fake('KeyW', true); g.input.fake('Space', true); g.player.body.vel.y = 6.2; g.player.body.grounded = false;
+        for (let t = 0; t < 1.2; t += 0.05) { g.update(0.05); lowest = Math.min(lowest, g.player.pos.y); }
+        g.input.fake('KeyW', false); g.input.fake('Space', false); n++;
+      }
+    }
+    ok(lowest > 7.0, 'jumping into furniture in 3C (' + n + ' tries) never drops you below the floor, lowest y=' + lowest.toFixed(2)); }
+  // 0. your front door: locked until you take the key, then it opens
+  const d3 = g.interact.doors.find(d => d.id === '3c');
+  use(g, 'door:3c'); sim(g, 0.5);
+  ok(!g.flags['door:3c'] && d3.box.on && /locked, take the key/.test(document.getElementById('toasts').textContent), 'front door locked, message shown');
+  use(g, 'pk:key3c'); sim(g, 1.5);
+  ok(g.flags['door:3c'] && !d3.box.on, 'taking the key opens the door');
+  ok(g.interact.doors.find(d => d.id === 'core2').open && !g.interact.doors.find(d => d.id === 'core2').box.on, 'F2 stairwell door starts open');
+  ok(g.interact.doors.find(d => d.id === 'lobby1').open, 'lobby door starts open');
   // 1. repairing GUIDE
   g.story.devSkip('help'); await waitFor(g, () => g.flags['guide:asked'], 60);
   ok(g.flags['guide:asked'], 'GUIDE asks for help');

@@ -29,6 +29,7 @@ export const TOOLS = {
 
 /* story items: not used up by crafting, shown on the key items row */
 export const KEYS = {
+  key3c:     { name: 'Flat Key', icon: 'keycard', desc: 'The key to your own front door, flat 3C.' },
   powercell: { name: 'Home Robot Power Cell', icon: 'powercell', desc: 'A spare cell from GUIDE\'s charging dock.' },
   forearm:   { name: 'GUIDE\'s Forearm', icon: 'servo', desc: 'His left arm, torn off at the elbow. The fingers still twitch.' },
   harness:   { name: 'Wiring Harness', icon: 'wire', desc: 'A bundle of wire from the building\'s fuse closet.' },

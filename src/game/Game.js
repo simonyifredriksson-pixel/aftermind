@@ -140,7 +140,7 @@ export class Game {
       case 'dmg': if (e.to === this.me) this.player.damage(e.n, e.from, e.kind); break;
       case 'sfx': this.audio[e.n]?.(...(e.a || [])); break;
       case 'fx': this.fx.event(e); break;
-      case 'toast': this.hud.toast(e.t); break;
+      case 'toast': this.hud.toast(e.t, e.secs); break;
       case 'obj': this.hud.objective(e.t, e.sub); break;
       case 'cine': this.story.cine?.(e.n, e); break;
       case 'chat': this.hud.chat(e.name, e.t); break;

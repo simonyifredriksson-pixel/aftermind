@@ -127,8 +127,12 @@ function floor3(G, B) {
   emergency(B, -30, y + 2.7, -1.1, 0, { flicker: 0.15 }); emergency(B, -19, y + 2.7, 1.1, Math.PI, { flicker: 0.6 }); emergency(B, -8.5, y + 2.7, -1.1, 0, { intensity: 2 });
   lamp(B, -26, y + H, 0, 0xffe6c8, 0, 0, { dead: true }); lamp(B, -14, y + H, 0, 0xffe6c8, 0, 0, { dead: true });
   // doors
-  I.door(B, { id: '3c', x: -29, y, z: 1.2, axis: 'x', w: 1.0, h: 2.2, kind: 'swing', open: true, mat: 'wood', swingDir: -1 });
-  G.flags['door:3c'] = true;
+  // your front door is locked: the key is on the dining table. Taking it unlocks and opens the door.
+  I.door(B, { id: '3c', x: -29, y, z: 1.2, axis: 'x', w: 1.0, h: 2.2, kind: 'swing', mat: 'wood', swingDir: -1,
+    locked: () => !G.partyHas('key3c'), lock: 'Locked',
+    onLocked: () => G.emit({ k: 'toast', t: 'The door is locked, take the key and unlock it', secs: 5 }) });
+  I.pickup(B, { id: 'key3c', key: 'key3c', icon: 'keycard', x: -27.6, y: y + 0.78, z: 4.2, label: 'Take the key',
+    onTake: () => { G.setFlag('door:3c', true); G.emit({ k: 'toast', t: 'You unlock the door.', secs: 3 }); } });
   I.door(B, { id: '3d', x: -20, y, z: 1.2, axis: 'x', w: 1.0, h: 2.2, kind: 'swing', mat: 'wood' });
   I.door(B, { id: '3a', x: -28, y, z: -1.2, axis: 'x', w: 1.0, h: 2.2, kind: 'swing', mat: 'wood', locked: () => true, lock: 'Jammed. The frame has buckled.' });
   I.door(B, { id: 'closet3', x: -20.3, y, z: -1.2, axis: 'x', w: 0.9, h: 2.2, kind: 'swing', mat: 'metal', label: 'Open the fuse closet' });
@@ -221,8 +225,8 @@ function floor2(G, B) {
   I.door(B, { id: '2b', x: -13.8, y, z: -1.2, axis: 'x', w: 1.0, kind: 'swing', mat: 'wood', locked: () => true, lock: 'Barricaded from the inside. Nobody answers.' });
   I.door(B, { id: '2c', x: -29, y, z: 1.2, axis: 'x', w: 1.0, kind: 'swing', mat: 'wood' });
   I.door(B, { id: '2d', x: -20, y, z: 1.2, axis: 'x', w: 1.0, kind: 'swing', mat: 'wood', locked: () => true, lock: 'Locked.' });
+  if (G.flags['door:core2'] === undefined) G.flags['door:core2'] = true; // starts open (set before the door reads it)
   I.door(B, { id: 'core2', x: -11.2, y, z: -1.2, axis: 'x', w: 1.1, kind: 'swing', mat: 'metalWhite' });
-  G.flags['door:core2'] = true;
   // 2C: the phone
   B.prop(() => prop('sofa', { color: 0x3a4a3a }), -30, y, 5, 0.1); B.prop(() => prop('rug'), -29, y, 6, 0, { solid: false });
   B.prop(() => prop('bookshelf', { seed: 11 }), -33.6, y, 8, Math.PI / 2);
@@ -260,7 +264,8 @@ function floor1(G, B) {
   debris(B, -31, 1.6, -0.4, 1.2, 8, 31); debris(B, -29, 0, 1.4, 1.5, 10, 32);
   B.node(-31.5, 1.6, -0.4); B.node(-29.8, 0.45, 0.9); B.nodeLine(-30, 0, -9, -30, 2.4, 3); B.node(-26.5, 0, -6);
   // doors
-  I.door(B, { id: 'lobby1', x: -24, y, z: -6, axis: 'z', w: 1.2, kind: 'swing', mat: 'wood' }); G.flags['door:lobby1'] = true;
+  if (G.flags['door:lobby1'] === undefined) G.flags['door:lobby1'] = true;
+  I.door(B, { id: 'lobby1', x: -24, y, z: -6, axis: 'z', w: 1.2, kind: 'swing', mat: 'wood' });
   I.door(B, { id: 'trash', x: -29, y, z: 3, axis: 'x', w: 1.2, kind: 'swing', mat: 'metal' });
   I.door(B, { id: 'laundry', x: -18, y, z: -1.2, axis: 'x', w: 1.2, kind: 'swing', mat: 'wood' });
   I.door(B, { id: 'service', x: X0, y, z: 9, axis: 'z', w: 1.2, kind: 'swing', mat: 'metalRed', label: 'Push the bar', swingDir: -1, onOpen: () => G.emit({ k: 'sfx', n: 'door', a: ['heavy', { x: X0, y: 1, z: 9 }] }) });
